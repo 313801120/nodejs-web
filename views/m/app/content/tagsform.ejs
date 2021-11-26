@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>用户添加栏目</title>
+    <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" type="text/css" />
+</head>
+
+<body> 
+    <form id="form1" name="form1" class="layui-form" method="post" action="tagsformsave?id=<%=id%>">
+        <div class="layui-form" lay-filter="layuiadmin-form-useradmin" id="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择分类</label>
+                <div class="layui-input-inline">
+                    <select name="parentid" id="parentid" selected>
+                        <option value="-1">≡ 作为一级栏目 ≡</option>
+                        <%for(var i=0;i<parentid.length;i++){%><option value="<%=parentid[i].value%>"<%=parentid[i].sel%>><%=parentid[i].show%></option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">栏目类型</label>
+                <div class="layui-input-inline">
+                    <select name="type" id="type" selected="">
+                        <option value='首页'>首页</option>
+                        <option value='文本' <%=type=="文本" ?" selected":""%>>文本</option>
+                        <option value='产品' <%=type=="产品" ?" selected":""%>>产品</option>
+                        <option value='新闻' <%=type=="新闻" ?" selected":""%>>新闻</option>
+                        <option value='视频' <%=type=="视频" ?" selected":""%>>视频</option>
+                        <option value='下载' <%=type=="下载" ?" selected":""%>>下载</option>
+                        <option value='案例' <%=type=="案例" ?" selected":""%>>案例</option>
+                        <option value='留言' <%=type=="留言" ?" selected":""%>>留言</option>
+                        <option value='反馈' <%=type=="反馈" ?" selected":""%>>反馈</option>
+                        <option value='招聘' <%=type=="招聘" ?" selected":""%>>招聘</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">栏目名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="required" placeholder="请输入栏目名称" autocomplete="off" class="layui-input" value="<%=name%>">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">栏目英文名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="enname" lay-verify="" placeholder="请输入栏目英文名称" autocomplete="off" class="layui-input" value="<%=enname%>">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="sort" lay-verify="number" placeholder="请输入排序" autocomplete="off" class="layui-input" value="<%=sort%>">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea name="content" id="content" placeholder="请输入文章内容" class="layui-textarea"><%=content%></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">审核状态</label>
+                <div class="layui-input-inline">
+                    <input type="checkbox" value="1" lay-filter="switch" name="isthrough" lay-skin="switch" lay-text="通过|待审核" <%=isthrough==1?' checked':""%>>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <input type="submit" class="layui-btn" value="保存资料" lay-submit="lay-submit" lay-filter="LAY-user-front-submit" id="LAY-user-front-submit" />
+            </div>
+        </div>
+    </form>
+    <script src="../../layuiadmin/layui/layui.js"></script>
+    <script>
+    layui.config({
+        base: '../../layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form', 'upload', 'laydate', 'set', 'layedit'], function() {
+        var $ = layui.$,
+            form = layui.form,
+            upload = layui.upload,
+            laydate = layui.laydate;
+
+        upload.render({
+            elem: '#layuiadmin-upload-useradmin',
+            url: '/api/upload/',
+            done: function(res) {
+                $(this.item).prev("div").children("input").val(res.data.src)
+            }
+        });
+
+        lay('.date').each(function() {
+            laydate.render({
+                elem: this,
+                trigger: 'click',
+                format: 'yyyy/MM/dd'
+
+            });
+        });
+        //编码器
+        var layedit = layui.layedit;
+        layedit.set({
+            //暴露layupload参数设置接口 --详细查看layupload参数说明
+            uploadImage: {
+                url: '/api/upload/' //上传接口url
+                    ,
+                type: 'post' //默认post 
+            }
+        });
+        layedit.build('content'); //建立编辑器
+
+
+
+    })
+    </script>
+</body>
+
+</html>

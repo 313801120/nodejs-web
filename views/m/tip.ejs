@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>tip提示</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/m/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/m/layuiadmin/style/admin.css" media="all">
+</head>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">提示</div>
+                    <div class="layui-card-body" pad15>
+                        <div class="layui-form" lay-filter="">
+                            <%=msg%>
+                            <%if(url=="back"){%>
+                                <a href='javascript:window.history.go(-1);' style="color: red;">点击返回</a>
+                            <%}else if(url!=""){%>
+                            <a href='<%=url%>' style="color: red;">点击跳转</a> 或5秒自动跳转<%}%>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/m/layuiadmin/layui/layui.js"></script>
+    <script>
+    layui.config({
+        base: '/m/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块   msg:"修改成功",icon:1,url:"adin"
+    }).use(['index', 'set'],function() {
+        layui.layer.msg("<%=msg%>", { icon: <%=icon%>, time: 25000  }, function() {
+            <%if(url=="back"){%>window.history.go(-1);<%}else if(url!=""){%>location.href = "<%=url%>";<%}%>
+        });
+    });
+    </script>
+</body>
+
+</html>

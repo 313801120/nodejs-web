@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= webTitle %></title>
+      <meta name="keywords" content="<%=webKeywords%>">
+  <meta name="description" content="<%=webDescription%>">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= webTitle %></h1>
+    <a href="/users/install">安装</a>
+
+    <ul>
+      <% for(var i=0;i<list.length;i++){ %>
+      <li><%=list[i]%></li>
+      <%}%> 
+    </ul>
+
+    <footer><%=webBottom%></footer>
+  </body>
+</html>
