@@ -33,8 +33,8 @@ class Access {
         var conn = mysql.createConnection({
             host: 'localhost',
             user: 'root',
-            password: 'root',
-            database: 'test',
+            password: 'root123456',
+            database: 'phpwebdata',
             charset: 'UTF8_GENERAL_CI'
         });
         conn.connect();
