@@ -7,6 +7,11 @@ var db = new access(2, 3);
 var conn = db.openConn();
 
 
+const ADODB = require('node-adodb');
+const connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:/work/xiyueta/data/data.mdb;Persist Security Info=False;');
+
+
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     res.send('respond with a resource ');
@@ -48,7 +53,7 @@ router.get('/info', function(req, res, next) {
     }
 });
 
-router.post('/delete', function(req, res, next) { //删除一条id对应的userInfo表的数据
+router.get('/delete', function(req, res, next) { //删除一条id对应的userInfo表的数据
     console.log(req.body, 77);
     const { UserId } = req.body
     const id = UserId
@@ -57,12 +62,29 @@ router.post('/delete', function(req, res, next) { //删除一条id对应的userI
         res.send('ok')
     });
 });
-router.post('/update/:id', function(req, res, next) { //更新一条对应id的userInfo表的数据
+router.get('/update/:id', function(req, res, next) { //更新一条对应id的userInfo表的数据
     var id = req.params.id;
     var content = req.body.content;
     db2.update({ content: content }, { id: id }, "userInfo", function(err, result) {
         res.redirect('back');
     });
+
+});
+//查看access数据库
+router.get('/access', function(req, res, next) { //更新一条对应id的userInfo表的数据
+    // 执行查询
+    connection
+        .query('SELECT * FROM xy_admin')
+        .then(data => {
+            console.log(data); // 查询结果
+            res.end(data);
+        })
+        .catch(error => {
+            console.error(error); // 错误处理
+        });
+
+
+        res.end("OK");
 
 });
 

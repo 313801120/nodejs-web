@@ -26,6 +26,7 @@
     "underscore": "^1.13.1"
   },
   "devDependencies": {
-    "mssql": "^10.0.1"
+    "mssql": "^10.0.1",
+    "node-adodb": "^5.0.3"
   }
 }
