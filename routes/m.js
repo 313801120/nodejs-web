@@ -11,6 +11,7 @@ var url = require('url');
 var md5 = require('md5-node');
 
 var session = require('express-session');
+var db_PREFIX = "";//表前缀
 
 router.use(
     session({
@@ -32,7 +33,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 var nickname = "";
 
-//案例验证
+//安全验证
 router.use(function(req, res, next) {
     if (typeof(req.session.adminid) != "number") {
         req.session.adminid = 1; //手动
@@ -64,7 +65,7 @@ router.get('/message', function(req, res, next) {
 });
 
 router.get('/set/user/info', function(req, res, next) {
-    var sql = "SELECT * FROM admin WHERE id=" + req.session.adminid;
+    var sql = "SELECT * FROM "+ db_PREFIX +"admin WHERE id=" + req.session.adminid;
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "显示基本信息失败，数据库查的出错了", icon: 2, url: "" });
@@ -117,7 +118,7 @@ router.post('/set/user/passwordsave', function(req, res, next) {
     oldPassword = md5(oldPassword); //md5加密
     var password = req.body.password;
     password = md5(password); //md5加密
-    var sql = "select * from admin WHERE id=" + req.session.adminid;
+    var sql = "select * from "+ db_PREFIX +"admin WHERE id=" + req.session.adminid;
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "修改密码失败，查找数组库现错了！", icon: 2, url: "password" });
@@ -157,7 +158,7 @@ router.post('/app/content/tagsadel', function(req, res, next) {
 });
 //分类json
 router.get('/app/content/tags/json', function(req, res, next) {
-    var sql = "SELECT * FROM webcolumn order by sort asc";
+    var sql = "SELECT * FROM "+ db_PREFIX +"webcolumn order by sort asc";
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "显示网站设置失败，数据库查的出错了", icon: 2, url: "" });
@@ -174,13 +175,14 @@ router.get('/app/content/tags/json', function(req, res, next) {
         }
     });
 });
+
 //显示文章列表
 router.get('/app/content/list', function(req, res, next) {
     res.render('m/app/content/list');
 });
-//分类json
+//文章列表json
 router.get('/app/content/list/json', function(req, res, next) {
-    var sql = "SELECT * FROM article order by sort asc";
+    var sql = "SELECT * FROM "+ db_PREFIX +"article order by sort asc";
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "显示网站设置失败，数据库查的出错了", icon: 2, url: "" });
@@ -212,7 +214,7 @@ router.get('/app/content/tagsform', function(req, res, next) {
             res.render('m/app/content/tagsform', data);
         })
     } else {
-        var sql = "SELECT * FROM webcolumn WHERE id=" + id;
+        var sql = "SELECT * FROM "+ db_PREFIX +"webcolumn WHERE id=" + id;
         conn.query(sql, function(err, rows) {
             if (err) {
                 res.render('m/tip', { msg: "显示分类表单，数据库查的出错了" + id, icon: 2, url: "" });
@@ -251,7 +253,7 @@ router.post('/app/content/tagsformsave', function(req, res, next) {
     isthrough = (isthrough == "1" ? 1 : 0);
     if (id == "") {
         if (name != "") {
-            var sql = "select * from webcolumn WHERE name='" + name + "'";
+            var sql = "select * from "+ db_PREFIX +"webcolumn WHERE name='" + name + "'";
             conn.query(sql, function(err, rows) {
                 if (err) {
                     res.render('m/tip', { msg: "添加栏目分类，数据库错误" + err, icon: 2, url: "tagsform" });
@@ -278,7 +280,7 @@ router.post('/app/content/tagsformsave', function(req, res, next) {
             res.render('m/tip', { msg: "添加分类表单，栏目名称不能为空！" + err, icon: 2, url: "back" });
         }
     } else {
-        var sql = "select * from webcolumn WHERE id=" + id;
+        var sql = "select * from "+ db_PREFIX +"webcolumn WHERE id=" + id;
         conn.query(sql, function(err, rows) {
             if (err) {
                 res.render('m/tip', { msg: "B分类表单保存，查找数组库现错了！" + id, icon: 2, url: "tagsform" });
@@ -299,7 +301,7 @@ router.post('/app/content/tagsformsave', function(req, res, next) {
 });
 
 router.get('/set/system/website', function(req, res, next) {
-    var sql = "SELECT * FROM website";
+    var sql = "SELECT * FROM "+ db_PREFIX +"website";
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "显示网站设置失败，数据库查的出错了", icon: 2, url: "" });
@@ -330,7 +332,7 @@ router.post('/set/system/websitesave', function(req, res, next) {
     var weburl = req.body.weburl;
     var logo = req.body.logo;
     var qrcode = req.body.qrcode;
-    var sql = "select * from website WHERE id=" + id;
+    var sql = "select * from "+ db_PREFIX +"website WHERE id=" + id;
     conn.query(sql, function(err, rows) {
         if (err) {
             res.render('m/tip', { msg: "修改网站设置失败，查找数组库现错了！", icon: 2, url: "website" });
@@ -500,10 +502,10 @@ router.post('/login', function(req, res, next) { // 输出 JSON 格式
     var password = req.body.password.replace(/'/g, "");
     password = md5(password);
     //查
-    var sql = "SELECT * FROM admin WHERE username='" + username + "' and pwd='" + password + "'"
+    var sql = "SELECT * FROM "+ db_PREFIX +"admin WHERE username='" + username + "' and pwd='" + password + "'"
     conn.query(sql, function(err, rows) {
         if (err) {
-            res.end(JSON.stringify({ status: "no", info: "数据库查的出错了" }));
+            res.end(JSON.stringify({ status: "no", info: "数据库查询出错了" }));
         } else {
             if (rows.length <= 0) {
                 res.end(JSON.stringify({ status: "no", info: "账号密码不正确！" }));
@@ -523,7 +525,7 @@ function columnSubInput(parentid, focusId, focusParentId, callback) {
     var s, sel
     var addsql = ""
     if (focusId != "") addsql = " and id<>" + focusId
-    var sql = "SELECT * FROM webcolumn WHERE parentid=" + parentid + addsql + " order by sort asc"
+    var sql = "SELECT * FROM "+ db_PREFIX +"webcolumn WHERE parentid=" + parentid + addsql + " order by sort asc"
     conn.query(sql, function(err, rows) {
         if (err) {
             console.log("columnSubInput", "显示分类表单，数据库查的出错了" + sql);
